@@ -2,6 +2,7 @@
 
 
 #include "GrabberPawn.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UGrabberPawn::UGrabberPawn()
@@ -24,6 +25,8 @@ void UGrabberPawn::BeginPlay()
 	inputComponent->BindAction("Grab", IE_Pressed, this, &UGrabberPawn::Grab);
 	inputComponent->BindAction("Grab", IE_Released, this, &UGrabberPawn::Release);
 	inputComponent->BindAction("Throw", IE_Pressed, this, &UGrabberPawn::Throw);
+
+	this->grabbedObjAnchor = this->GetOwner()->FindComponentByClass<USceneComponent>()->GetChildComponent(0);
 }
 
 
@@ -37,13 +40,23 @@ void UGrabberPawn::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	FVector location;
 	FRotator rotation;
 	this->GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(location, rotation);
+
 	FVector lineTraceEnd = location + rotation.Vector() * this->REACH;
 
 	if (this->grabbedActor != nullptr)
 	{
 		if (this->physicsHandle != nullptr)
 		{
-			this->physicsHandle->SetTargetLocation(lineTraceEnd);
+			if (this->grabbedObjAnchor != nullptr)
+			{
+				FVector anchor = this->grabbedObjAnchor->GetComponentLocation();
+				this->physicsHandle->SetTargetLocation(anchor);
+
+				UE_LOG(LogTemp, Warning, TEXT("Anchor position: %f, %f, %f"), anchor.X, anchor.Y, anchor.Z);
+				UE_LOG(LogTemp, Warning, TEXT("Name: %s"), *this->grabbedObjAnchor->GetName());
+			}
+			else
+				this->physicsHandle->SetTargetLocation(lineTraceEnd);
 		}
 	}
 }
@@ -93,6 +106,28 @@ void UGrabberPawn::Release()
 
 void UGrabberPawn::Throw()
 {
+	if (this->grabbedActor != nullptr)
+	{
+		if (this->physicsHandle != nullptr)
+		{
+			float tempReach = 2500.0f;
+			float throwStrength = 250000.0f * this->primitiveComp->GetMass();
 
+			FVector location;
+			FRotator rotation;
+			this->GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(location, rotation);
+			FVector lineTraceEnd = location + (rotation.Vector() * tempReach);
+			DrawDebugLine(this->GetWorld(), location, lineTraceEnd, FColor::Green, false, 5.0, 0, 5.0f);
+
+			FVector location2 = this->grabbedActor->GetActorLocation();
+			FVector direction1 = UKismetMathLibrary::GetDirectionUnitVector(location2, lineTraceEnd);
+			FVector lineTraceEnd2 = location2 + (direction1 * throwStrength);
+			DrawDebugLine(this->GetWorld(), location2, lineTraceEnd2, FColor::Blue, false, 3.0, 0, 5.0f);
+
+			this->primitiveComp->AddForce(lineTraceEnd2, EName::None);
+
+			Release();
+		}
+	}
 }
 

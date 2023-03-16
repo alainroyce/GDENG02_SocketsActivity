@@ -33,6 +33,7 @@ private:
 	UPROPERTY(EditAnywhere) float REACH = 600.0f;
 	bool hasGrabbed = false;
 	bool hasThrown = false;
+	USceneComponent* grabbedObjAnchor;
 	AActor* grabbedActor = nullptr;
 	UPhysicsHandleComponent* physicsHandle = nullptr;
 	UPrimitiveComponent* primitiveComp = nullptr;
