@@ -23,7 +23,7 @@ void UGrabberPawn::BeginPlay()
 	// ...
 	UInputComponent* inputComponent = this->GetOwner()->FindComponentByClass<UInputComponent>();
 	inputComponent->BindAction("Grab", IE_Pressed, this, &UGrabberPawn::Grab);
-	inputComponent->BindAction("Grab", IE_Released, this, &UGrabberPawn::Release);
+	//->BindAction("Grab", IE_Released, this, &UGrabberPawn::Release);
 	inputComponent->BindAction("Throw", IE_Pressed, this, &UGrabberPawn::Throw);
 
 	this->grabbedObjAnchor = this->GetOwner()->FindComponentByClass<USceneComponent>()->GetChildComponent(0);
