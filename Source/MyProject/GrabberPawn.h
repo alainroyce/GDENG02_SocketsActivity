@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
@@ -37,7 +38,6 @@ private:
 	AActor* grabbedActor = nullptr;
 	UPhysicsHandleComponent* physicsHandle = nullptr;
 	UPrimitiveComponent* primitiveComp = nullptr;
-
 
 	void Grab();
 	void Release();
