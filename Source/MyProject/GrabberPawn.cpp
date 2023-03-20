@@ -163,7 +163,7 @@ void UGrabberPawn::Throw()
 		if (this->physicsHandle != nullptr)
 		{
 			float tempReach = 2500.0f;
-			float throwStrength = 250000.0f * this->primitiveComp->GetMass();
+			float throwStrength = 500000.0f * this->primitiveComp->GetMass();
 
 			FVector location;
 			FRotator rotation;
